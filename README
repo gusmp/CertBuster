@@ -31,7 +31,7 @@ mvn clean package -DskipTests=true
 
 In case you want to execute the test. 
 
-NOTE: In orde to execute the test correctly you will need to configure your smtp properties
+NOTE: In order to execute the tests correctly you will need to configure your smtp properties
 
 If the process is successful in the folder "target" will be a jar file called certBuster-VERSION.jar
 
