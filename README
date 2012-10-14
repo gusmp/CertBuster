@@ -1,8 +1,8 @@
 
-1.What certBuster?
-==================
+1.What is CertBuster?
+=====================
 
-CerBuster is tiny tool which let you keep under control which and when your SSL certificates will expired. This is very useful in big organizations which the knowledge of the server stare is blur or inexistent.
+CerBuster is tiny tool which let you keep under control which and when your SSL certificates will expired. This is very useful in big organizations which the knowledge of the server state is blur or inexistent.
 
 CertBuster will scan the server you want and will do for you:
 
