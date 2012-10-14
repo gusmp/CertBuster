@@ -1,0 +1,13 @@
+/.settings/*
+/target/*
+/.classpath
+/.project
+/config.properties
+/hosts.csv
+/notas.txt
+
+
+
+
+
+
