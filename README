@@ -22,13 +22,18 @@ CertBuster is a Java application. Verify you have an updated Java version. If yo
 
 CertBuster uses Maven. First install it and execute:
 
-mvn clean package -DskipTests=true
+mvn clean package
+
 
 Or
 
-mvn clean package
+mvn clean package -DskipTests=true
 
-In case you want to execute the test. If the process is successful in the folder "target" will be a jar file called certBuster-VERSION.jar
+In case you want to execute the test. 
+
+NOTE: In orde to execute the test correctly you will need to configure your smtp properties
+
+If the process is successful in the folder "target" will be a jar file called certBuster-VERSION.jar
 
 
 4.Usage
