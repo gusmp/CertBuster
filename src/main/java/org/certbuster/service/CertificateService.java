@@ -1,11 +1,18 @@
 package org.certbuster.service;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.security.cert.CRL;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.DEROctetString;
+import org.bouncycastle.asn1.x509.DistributionPoint;
+import org.bouncycastle.asn1.x509.GeneralNames;
 import org.certbuster.beans.CertificateInfoBean;
 
 public class CertificateService 
@@ -33,27 +40,35 @@ public class CertificateService
 		
 	}
 	
-	private List<String> getCrlDistributionPoints(byte[] crlDistributionPoints)
+	private List<List<String>> getCrlDistributionPoints(byte[] crlDistributionPoints)
 	{
-		// As far as I know there is no support for DER encoding in JDK. And I do not want to use external libs
-		// such as BC or IAIK
-		final String START_CRL_DP = "http"; 
-		final String END_CRL_DP = ".crl";
+		List<List<String>> crlDistributionPointList = new ArrayList<List<String>>(2);
 		
-		String crldp = new String(crlDistributionPoints);
-		List<String> crlDistributionPointList = new ArrayList<String>(2);
-		
-		int beginIdx = 0;
-		int endIdx = 0;
-		
-		while(endIdx != -1)
+		try 
 		{
-			beginIdx = crldp.indexOf(START_CRL_DP, endIdx);
-			if (beginIdx == -1) break;
-			endIdx = crldp.indexOf(END_CRL_DP, endIdx);
-			endIdx += END_CRL_DP.length();
-			crlDistributionPointList.add(crldp.substring(beginIdx, endIdx));
-			LogService.writeLog("Found crl dp: " + crldp.substring(beginIdx, endIdx));
+			ASN1InputStream crlDPExtAsn1Stream = new ASN1InputStream(new ByteArrayInputStream(crlDistributionPoints));
+			DEROctetString crlDPExtDerObjStr  = (DEROctetString) crlDPExtAsn1Stream.readObject();
+			ASN1InputStream asn1is = new ASN1InputStream(crlDPExtDerObjStr.getOctets());
+		    ASN1Sequence crlDPSeq = (ASN1Sequence) asn1is.readObject();
+		    for (int i = 0; i < crlDPSeq.size(); i++)
+		    {
+			  DistributionPoint crldp = new DistributionPoint((ASN1Sequence) crlDPSeq.getObjectAt(i).toASN1Primitive());
+			  GeneralNames gns = (GeneralNames) crldp.getDistributionPoint().getName();
+			  List<String> listUrlCRL = new ArrayList<String>(gns.getNames().length);
+			  for(int j=0; j < gns.getNames().length; j++)
+			  {
+				  listUrlCRL.add(gns.getNames()[j].getName().toString());
+			  }
+				  
+			  crlDistributionPointList.add(listUrlCRL);
+		    }
+		    
+		    asn1is.close();
+		    crlDPExtAsn1Stream.close();
+		} 
+		catch (IOException exc) 
+		{
+			LogService.writeLog("CRL extension could not be parsed!");
 		}
 		
 		return crlDistributionPointList;
@@ -65,7 +80,7 @@ public class CertificateService
 		byte[] crlDpExtension = certificate.getExtensionValue("2.5.29.31");
 		if (crlDpExtension != null)
 		{
-			List<String> crlDistributionPoints = getCrlDistributionPoints(certificate.getExtensionValue("2.5.29.31"));
+			List<List<String>> crlDistributionPoints = getCrlDistributionPoints(certificate.getExtensionValue("2.5.29.31"));
 			if (crlDistributionPoints.size() == 0)
 			{
 				LogService.writeLog("Crl distribution point exists but I could not find any url (not http and ended with .crl??)");
@@ -73,9 +88,14 @@ public class CertificateService
 			}
 			
 			ConnectionService connectionService = new ConnectionService();
-			for(String urlCrl : crlDistributionPoints)
+			for(List<String> crlDp : crlDistributionPoints)
 			{
-				CRL crl = connectionService.getCrl(urlCrl);
+				CRL crl = null;
+				for(int i = 0; i < crlDp.size() && crl == null ; i++)
+				{
+					crl = connectionService.getCrl(crlDp.get(i));
+				}
+				
 				if ((crl != null) && (crl.isRevoked(certificate) == true))
 				{
 					return Crl_Status.REVOKED;
