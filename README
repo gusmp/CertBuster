@@ -17,25 +17,7 @@ Doing this, you will have a fresh report and a warning email periodically.
 
 CertBuster is a Java application. Verify you have an updated Java version. If you don't, you can download from http://www.java.com/es/download/  
 
-3.Compile
-=========
-
-CertBuster uses Maven. First install it and execute:
-
-mvn clean package
-
-
-Or
-
- mvn clean package -DskipTests=true
-
-In case you want to execute the test. 
-
-NOTE: In order to execute the tests correctly you will need to configure your smtp properties
-
-If the process is successful in the folder "target" will be a jar file called certBuster-VERSION.jar
-
-4.Compile with dependencies (recommended!)
+3.Compile with dependencies (recommended!)
 ==========================================
 
 You can create the package with the dependencies in a single jar file. To generate this jar just type:
@@ -46,7 +28,27 @@ Or
 
 mvn clean compile assembly:single -DskipTests=true
 
-To skipt the tests.
+To skip the tests.
+
+NOTE: In order to execute the tests correctly you will need to configure your smtp properties
+
+If the process is successful in the folder "target" will be a jar file called certBuster-VERSION-jar-with-dependencies.jar
+
+4.Compile without dependencies (for experts)
+============================================
+
+CertBuster uses Maven. First install it and execute:
+
+mvn clean package
+
+
+Or
+
+mvn clean package -DskipTests=true
+
+In case you want to execute the test. 
+
+If the process is successful in the folder "target" will be a jar file called certBuster-VERSION.jar
 
 4.Usage
 =======
@@ -80,19 +82,7 @@ In the latter case the port used is https (443)
 
 The folder \src\test\resources\hosts.csv has an example with correct / wrong entries.
 
-5.Run CertBuster (without dependencies)
-========================================
-
-First verify that the files (included in libs folder):
-
-activation-1.1.1.jar
-mail-1.4.5.jar
-
-Are in the same folder of CertBuster. Now execute it with:
-
-java -jar certBuster-VERSION.jar <CONFIG_FILE>
-
-6.Run CertBuster (with dependencies)
+5.Run CertBuster (with dependencies)
 ====================================
 
 In the target folder you will have the file:
@@ -102,3 +92,18 @@ certBuster-<VERSION>-jar-with-dependencies.jar
 Just type:
 
 java -jar certBuster-<VERSION>-jar-with-dependencies.jar <CONFIG_FILE>
+
+6.Run CertBuster (without dependencies)
+========================================
+
+First verify that the files (included in libs folder):
+
+activation-1.1.1.jar
+bcprov-ext-jdk15on-1.48.jar
+mail-1.4.5.jar
+
+Are in the same folder of CertBuster. Now execute it with:
+
+java -jar certBuster-VERSION.jar <CONFIG_FILE>
+
+
