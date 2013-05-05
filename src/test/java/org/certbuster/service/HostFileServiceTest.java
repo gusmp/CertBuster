@@ -32,7 +32,7 @@ public class HostFileServiceTest
 		{
 			hostFileService.load(ConfigurationBean.HOSTFILE);
 			assertNotNull(ConfigurationBean.HOSTLIST);
-			assertEquals(6,ConfigurationBean.HOSTLIST.size());
+			assertEquals(5,ConfigurationBean.HOSTLIST.size());
 		}
 		catch(Exception exc)
 		{

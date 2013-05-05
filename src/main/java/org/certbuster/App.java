@@ -10,6 +10,7 @@ import org.certbuster.beans.CertificateInfoBean;
 import org.certbuster.beans.ConfigurationBean;
 import org.certbuster.beans.HostInfoBean;
 import org.certbuster.beans.CertificateInfoBean.RESULT_CODE;
+import org.certbuster.service.CertificateService;
 import org.certbuster.service.ConfigService;
 import org.certbuster.service.ConnectionService;
 import org.certbuster.service.HostFileService;
@@ -81,6 +82,12 @@ public class App
    					certificateInfoList.add(certificateInfoBean);
    				}
    			}
+   		}
+   		
+   		if (ConfigurationBean.VALIDATION_CRL_STATUS == true)
+   		{
+   			CertificateService certificateService = new CertificateService();
+   			certificateService.checkCrlStatus(certificateInfoList);
    		}
    		
    		ReportService reportService = new ReportService();

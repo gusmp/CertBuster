@@ -13,6 +13,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.certbuster.beans.CertificateInfoBean;
 import org.certbuster.beans.CertificateInfoBean.RESULT_CODE;
 import org.certbuster.beans.ConfigurationBean;
+import org.certbuster.service.CertificateService.Crl_Status;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.assertTrue;
@@ -43,6 +44,7 @@ public class MailserviceTest
 			ciBean.setSubject("Subject " + days);
 			ciBean.setPort(443);
 			ciBean.setNotBefore(new Date());
+			ciBean.setCrlStatus(Crl_Status.VALID);
 			
 			Calendar expire = GregorianCalendar.getInstance();
 			expire.add(Calendar.DAY_OF_MONTH, days);
@@ -58,6 +60,7 @@ public class MailserviceTest
 		ciBean.setIssuer("Issuer Expired");
 		ciBean.setSubject("Subject Expired");
 		ciBean.setPort(443);
+		ciBean.setCrlStatus(Crl_Status.EXPIRED);
 		
 		Calendar expire = GregorianCalendar.getInstance();
 		expire.add(Calendar.DAY_OF_MONTH, -20);

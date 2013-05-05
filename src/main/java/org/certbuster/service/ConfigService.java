@@ -35,6 +35,7 @@ public class ConfigService
 	private String MAIL_SMTP_AUTH			  = "mail.smtp.auth";
 	private String MAIL_SMTP_PASSWORD		  = "mail.smtp.password";
 	
+	private String VALIDATION_CRL_STATUS   = "validate.crlStatus";
 	
 	
 	public void load(String configFilePath) throws FileNotFoundException, IOException, ParserConfigurationException
@@ -54,6 +55,8 @@ public class ConfigService
 		loadReportingProperties(properties);
 		
 		loadMailProperties(properties);
+		
+		loadValidationProperties(properties);
 		
 	}
 	
@@ -153,5 +156,17 @@ public class ConfigService
 		}
 		
 		ConfigurationBean.MAIL_SMTP_PASSWORD = properties.getProperty(MAIL_SMTP_PASSWORD);
+	}
+	
+	private void loadValidationProperties(Properties properties)
+	{
+		ConfigurationBean.VALIDATION_CRL_STATUS = false;
+		if (properties.getProperty(VALIDATION_CRL_STATUS) != null)
+		{
+			if (properties.getProperty(VALIDATION_CRL_STATUS).equalsIgnoreCase("1") == true)
+			{
+				ConfigurationBean.VALIDATION_CRL_STATUS = true;
+			}
+		}
 	}
 }

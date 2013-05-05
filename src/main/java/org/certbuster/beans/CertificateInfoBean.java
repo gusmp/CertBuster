@@ -1,6 +1,9 @@
 package org.certbuster.beans;
 
+import java.security.cert.X509Certificate;
 import java.util.Date;
+
+import org.certbuster.service.CertificateService.Crl_Status;
 
 public class CertificateInfoBean 
 {
@@ -12,6 +15,8 @@ public class CertificateInfoBean
 	
 	private String host;
 	private Integer port;
+	private X509Certificate sslCertificate;
+	private Crl_Status crlStatus;
 	
 	public enum RESULT_CODE {OK, ERROR, URL_WITHOUT_CERTS} 
 	
@@ -35,4 +40,11 @@ public class CertificateInfoBean
 	
 	public Integer getPort() { return port; }
 	public void setPort(Integer port) { this.port = port; }
+	
+	public X509Certificate getSslCertificate() { return sslCertificate; }
+	public void setSslCertificate(X509Certificate sslCertificate) { this.sslCertificate = sslCertificate; }
+	
+	public Crl_Status getCrlStatus() { return crlStatus; }
+	public void setCrlStatus(Crl_Status crlStatus) { this.crlStatus = crlStatus; }
+	
 }

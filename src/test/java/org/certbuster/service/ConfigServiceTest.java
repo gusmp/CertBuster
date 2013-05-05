@@ -27,7 +27,7 @@ public class ConfigServiceTest
 		{
 			configService.load(CONFIG_FILE);
 			assertEquals(ConfigurationBean.HOSTFILE, HOST_FILE);
-			assertEquals(ConfigurationBean.HTTP_PROXY_PORT,"6588");
+			assertEquals(ConfigurationBean.HTTP_PROXY_PORT,"");
 			assertEquals(ConfigurationBean.ENABLE_LOGIN,true);
 			assertEquals(ConfigurationBean.MAIL_SMTP_HOST,"smtp.gmail.com");
 			assertArrayEquals(ConfigurationBean.EXPIRE_WARN, new Integer[] {60,30,15});

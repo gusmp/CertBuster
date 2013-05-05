@@ -150,28 +150,34 @@ public class MailService
 		
 		if (period == 0)
 		{
-			table.append("          <th scope=\"col\" colspan=\"6\">Certificates expired</th>");
+			table.append("          <th scope=\"col\" colspan=\"7\">Certificates expired</th>");
 		}
 		else
 		{
-			table.append("          <th scope=\"col\" colspan=\"6\">Certificates will expire in " + period + " days</th>");
+			table.append("          <th scope=\"col\" colspan=\"7\">Certificates will expire in " + period + " days</th>");
 		}
 		table.append("        </tr>");
 		table.append("        <tr>");
 		table.append("	         <th scope=\"col\">" + HeaderValues.HOST.getValue() + "</th>");
 		table.append("	         <th scope=\"col\">" + HeaderValues.PORT.getValue() +  "</th>");
 		table.append("				<th scope=\"col\">" + HeaderValues.ISSUER.getValue() + "</th>");
+		table.append("              <th scope=\"col\">" + HeaderValues.NOT_BEFORE.getValue() + "</th>");
 		table.append("				<th scope=\"col\">" + HeaderValues.NOT_AFTER.getValue() + "</th>");
-		table.append("             <th scope=\"col\">" + HeaderValues.SUBJECT.getValue() + "</th>");
-		table.append("             <th scope=\"col\">" + HeaderValues.NOT_BEFORE.getValue() + "</th>");
+		if (ConfigurationBean.VALIDATION_CRL_STATUS == true)
+		{
+			table.append("              <th scope=\"col\">" + HeaderValues.STATUS_CRL.getValue() + "</th>");
+		}
+		table.append("              <th scope=\"col\">" + HeaderValues.SUBJECT.getValue() + "</th>");
 		table.append("          </tr>");
 		table.append("      </thead>");
 		table.append("      <tbody>");
-		table.append("         <tr>");
+		
 		
 		if(certificateInfoBeanWarnList.size() == 0)
 		{
-			table.append("           <td colspan=\"6\">No certificates were found</td>");
+			table.append("        <tr>");
+			table.append("           <td colspan=\"7\">No certificates were found</td>");
+			table.append("        </tr>");
 		}
 		else
 		{
@@ -179,18 +185,22 @@ public class MailService
 			
 			for(CertificateInfoBean ciBean: certificateInfoBeanWarnList)
 			{
+				table.append("         <tr>");
 				table.append("           <td>" + ciBean.getHost() + "</td>");
 				table.append("           <td>" + ciBean.getPort() + "</td>");
 				table.append("           <td>" + ciBean.getIssuer() + "</td>");
-				table.append("           <td>" + sdf.format(ciBean.getNotAfter()) + "</td>");
-				table.append("           <td>" + ciBean.getSubject() + "</td>");
 				table.append("           <td>" + sdf.format(ciBean.getNotBefore()) + "</td>");
+				table.append("           <td>" + sdf.format(ciBean.getNotAfter()) + "</td>");
+				if (ConfigurationBean.VALIDATION_CRL_STATUS == true)
+				{
+					table.append("           <td>" + ciBean.getCrlStatus().getValue() + "</td>");
+				}
+				table.append("           <td>" + ciBean.getSubject() + "</td>");
+				table.append("        </tr>");
 			}
-	
-			table.append("        </tr>");
-			table.append("      </tbody>");
-			table.append("    </table>");
 		}
+		table.append("      </tbody>");
+		table.append("    </table>");
 		
 		table.append("    <p></p>");
 		

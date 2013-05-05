@@ -13,6 +13,7 @@ public class HostFileService
 	private String LINE_SEPARATOR  = ";";
 	private String RANGE_SEPARATOR = "-";
 	private Integer DEFAULT_PORT   = 443;
+	private String COMMENT_CHARACTER   = "#";
 	
 	public void load(String hostFile) throws FileNotFoundException, IOException
 	{
@@ -31,6 +32,11 @@ public class HostFileService
 				continue;
 			}
 			
+			if (line.startsWith(COMMENT_CHARACTER) == true)
+			{
+				continue;
+			}
+			
 			hostInfo = processLine(line);
 			if (hostInfo != null)
 			{
@@ -42,6 +48,8 @@ public class HostFileService
 		{
 			ConfigurationBean.HOSTLIST = hostsList;
 		}
+		
+		reader.close();
 	}
 	
 	private HostInfoBean processLine(String line)
@@ -94,7 +102,7 @@ public class HostFileService
 		}
 		catch(NumberFormatException exc)
 		{
-			LogService.writeLog(host + " the port " + port + " is not nummeric");
+			LogService.writeLog(host + " the port " + port + " is not numeric");
 			throw exc;
 		}
 		

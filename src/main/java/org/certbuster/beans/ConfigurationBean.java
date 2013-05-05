@@ -36,6 +36,9 @@ public class ConfigurationBean
 	public static Boolean MAIL_SMTP_AUTH;
 	public static String  MAIL_SMTP_PASSWORD;
 	
+	// validations
+	public static Boolean VALIDATION_CRL_STATUS;
+	
 	
 }
 

@@ -9,6 +9,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.certbuster.beans.CertificateInfoBean;
 import org.certbuster.beans.CertificateInfoBean.RESULT_CODE;
+import org.certbuster.service.CertificateService.Crl_Status;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.assertTrue;
@@ -41,6 +42,7 @@ public class ReportServiceTest
 			certificateInfoBean.setNotBefore(new Date());
 			certificateInfoBean.setHost("Host " + i);
 			certificateInfoBean.setPort(5000 + i);
+			certificateInfoBean.setCrlStatus(Crl_Status.VALID);
 			
 			certificateInfoBeanList.add(certificateInfoBean);
 		}

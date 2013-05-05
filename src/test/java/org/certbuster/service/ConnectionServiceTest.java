@@ -18,10 +18,10 @@ public class ConnectionServiceTest
 	private final String CONFIG_FILE = "src/test/resources/config.properties";
 	private ConnectionService connectionService;
 	
-	private String  HOST_TEST = "www.google.es"; 
+	private String  HOST_TEST = "www.google.com"; 
 	private Integer PORT_TEST = 443;
 	private String  ISSUER_TEST = "CN=Google Internet Authority, O=Google Inc, C=US";
-	private String 	SUBJECT_TEST = "CN=*.google.es, O=Google Inc, L=Mountain View, ST=California, C=US";
+	private String 	SUBJECT_TEST = "CN=www.google.com, O=Google Inc, L=Mountain View, ST=California, C=US";
 	
 	
 	
