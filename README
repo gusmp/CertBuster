@@ -27,7 +27,7 @@ mvn clean package
 
 Or
 
-mvn clean package -DskipTests=true
+ mvn clean package -DskipTests=true
 
 In case you want to execute the test. 
 
@@ -35,6 +35,18 @@ NOTE: In order to execute the tests correctly you will need to configure your sm
 
 If the process is successful in the folder "target" will be a jar file called certBuster-VERSION.jar
 
+4.Compile with dependencies (recommended!)
+==========================================
+
+You can create the package with the dependencies in a single jar file. To generate this jar just type:
+
+mvn clean compile assembly:single
+
+Or
+
+mvn clean compile assembly:single -DskipTests=true
+
+To skipt the tests.
 
 4.Usage
 =======
@@ -68,10 +80,10 @@ In the latter case the port used is https (443)
 
 The folder \src\test\resources\hosts.csv has an example with correct / wrong entries.
 
-5.Run CertBuster
-================
+5.Run CertBuster (without dependencies)
+========================================
 
-First verify the the files (included in libs folder):
+First verify that the files (included in libs folder):
 
 activation-1.1.1.jar
 mail-1.4.5.jar
@@ -79,3 +91,14 @@ mail-1.4.5.jar
 Are in the same folder of CertBuster. Now execute it with:
 
 java -jar certBuster-VERSION.jar <CONFIG_FILE>
+
+6.Run CertBuster (with dependencies)
+====================================
+
+In the target folder you will have the file:
+
+certBuster-<VERSION>-jar-with-dependencies.jar
+
+Just type:
+
+java -jar certBuster-<VERSION>-jar-with-dependencies.jar <CONFIG_FILE>
