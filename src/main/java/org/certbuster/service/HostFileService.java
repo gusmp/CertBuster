@@ -8,111 +8,118 @@ import java.util.ArrayList;
 import org.certbuster.beans.ConfigurationBean;
 import org.certbuster.beans.HostInfoBean;
 
-public class HostFileService 
+public class HostFileService
 {
-	private String LINE_SEPARATOR  = ";";
-	private String RANGE_SEPARATOR = "-";
-	private Integer DEFAULT_PORT   = 443;
-	private String COMMENT_CHARACTER   = "#";
-	
-	public void load(String hostFile) throws FileNotFoundException, IOException
+    private String LINE_SEPARATOR = ";";
+    private String RANGE_SEPARATOR = "-";
+    private Integer DEFAULT_PORT = 443;
+    private String COMMENT_CHARACTER = "#";
+
+    public void load(String hostFile) throws FileNotFoundException, IOException
+    {
+	String line;
+	Boolean isHeader = true;
+	ArrayList<HostInfoBean> hostsList = new ArrayList<HostInfoBean>(100);
+	HostInfoBean hostInfo;
+
+	BufferedReader reader = new BufferedReader(new FileReader(hostFile));
+
+	while ((line = reader.readLine()) != null)
 	{
-		String line;
-		Boolean isHeader = true;
-		ArrayList<HostInfoBean> hostsList = new ArrayList<HostInfoBean>(100);
-		HostInfoBean hostInfo;
-		
-		BufferedReader reader = new BufferedReader(new FileReader(hostFile));
-		
-		while((line = reader.readLine()) != null)
-		{
-			if (isHeader == true)
-			{
-				isHeader = false;
-				continue;
-			}
-			
-			if (line.startsWith(COMMENT_CHARACTER) == true)
-			{
-				continue;
-			}
-			
-			hostInfo = processLine(line);
-			if (hostInfo != null)
-			{
-				hostsList.add(hostInfo);
-			}
-		}
-		
-		if (hostsList.isEmpty() == false)
-		{
-			ConfigurationBean.HOSTLIST = hostsList;
-		}
-		
-		reader.close();
+	    if (isHeader == true)
+	    {
+		isHeader = false;
+		continue;
+	    }
+
+	    if (line.trim().length() == 0)
+	    {
+		continue;
+	    }
+
+	    if (line.startsWith(COMMENT_CHARACTER) == true)
+	    {
+		continue;
+	    }
+
+	    hostInfo = processLine(line);
+	    if (hostInfo != null)
+	    {
+		hostsList.add(hostInfo);
+	    }
 	}
-	
-	private HostInfoBean processLine(String line)
+
+	if (hostsList.isEmpty() == false)
 	{
-		HostInfoBean hostInfo = null;
-		
-		try
-		{
-			String fields[] = line.split(LINE_SEPARATOR);
-			
-			if (fields.length == 1)
-			{
-				LogService.writeLog(fields[0] + " has no port. Use " + DEFAULT_PORT);
-				hostInfo = new HostInfoBean(fields[0], DEFAULT_PORT, DEFAULT_PORT);
-			}
-			else if (fields.length >= 2)
-			{
-				String range[] = fields[1].split(RANGE_SEPARATOR);
-	
-				if (range.length == 1)
-				{
-					hostInfo = new HostInfoBean(fields[0],testPort(fields[0],range[0]),testPort(fields[0],range[0]));
-				}
-				else if (range.length == 2)
-				{
-					if (testPort(fields[0], range[0]) <= testPort(fields[0], range[1]))
-					{
-						hostInfo = new HostInfoBean(fields[0],testPort(fields[0], range[0]),testPort(fields[0], range[1]));
-					}
-					else
-					{
-						LogService.writeLog(fields[0] + " has wrong range " + range[0] + "/" + range[1]);
-					}
-				}
-			}
-		}
-		catch(Exception exc) {}
-		
-		return(hostInfo);
-		
+	    ConfigurationBean.HOSTLIST = hostsList;
 	}
-	
-	private Integer testPort(String host, String port) throws Exception
+
+	reader.close();
+    }
+
+    private HostInfoBean processLine(String line)
+    {
+	HostInfoBean hostInfo = null;
+
+	try
 	{
-		Integer iPort = 0;
-		
-		try
+	    String fields[] = line.split(LINE_SEPARATOR);
+
+	    if (fields.length == 1)
+	    {
+		LogService.writeLog(fields[0] + " has no port. Use " + DEFAULT_PORT);
+		hostInfo = new HostInfoBean(fields[0], DEFAULT_PORT, DEFAULT_PORT);
+	    }
+	    else if (fields.length >= 2)
+	    {
+		String range[] = fields[1].split(RANGE_SEPARATOR);
+
+		if (range.length == 1)
 		{
-			iPort = Integer.valueOf(port);
+		    hostInfo = new HostInfoBean(fields[0], testPort(fields[0], range[0]), testPort(fields[0], range[0]));
 		}
-		catch(NumberFormatException exc)
+		else if (range.length == 2)
 		{
-			LogService.writeLog(host + " the port " + port + " is not numeric");
-			throw exc;
+		    if (testPort(fields[0], range[0]) <= testPort(fields[0], range[1]))
+		    {
+			hostInfo = new HostInfoBean(fields[0], testPort(fields[0], range[0]), testPort(fields[0], range[1]));
+		    }
+		    else
+		    {
+			LogService.writeLog(fields[0] + " has wrong range " + range[0] + "/" + range[1]);
+		    }
 		}
-		
-		if ((iPort < 0) || (iPort > 65536))
-		{
-			LogService.writeLog(host + " wrong port number");
-			throw new Exception("Wrong port number");
-		}
-		
-		return (iPort); 
+	    }
 	}
-	
+	catch (Exception exc)
+	{
+	}
+
+	return (hostInfo);
+
+    }
+
+    private Integer testPort(String host, String port) throws Exception
+    {
+	Integer iPort = 0;
+
+	try
+	{
+	    iPort = Integer.valueOf(port);
+	}
+	catch (NumberFormatException exc)
+	{
+	    LogService.writeLog(host + " the port " + port + " is not numeric");
+	    throw exc;
+	}
+
+	if ((iPort < 0) || (iPort > 65536))
+	{
+	    LogService.writeLog(host + " wrong port number");
+	    throw new Exception("Wrong port number");
+	}
+
+	return (iPort);
+    }
+
 }
