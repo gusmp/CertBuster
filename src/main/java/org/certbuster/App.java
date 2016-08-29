@@ -89,9 +89,10 @@ public class App
 	ReportService reportService = new ReportService();
 	reportService.generateReport(certificateInfoList);
 
-	MailService mailService = new MailService();
-	mailService.sendMail(certificateInfoList);
-
-    }
+	if (ConfigurationBean.ENABLE_SEND_WARN_MAIL == true) { 
+		MailService mailService = new MailService();
+		mailService.sendMail(certificateInfoList);
+	}
+	}
 
 }

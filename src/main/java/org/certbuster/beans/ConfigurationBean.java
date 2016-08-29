@@ -11,6 +11,7 @@ public class ConfigurationBean
     // Warnings
     public static Integer[] EXPIRE_WARN;
     public static String WARN_MAIL_ADDRESS;
+    public static Boolean ENABLE_SEND_WARN_MAIL;
 
     // Proxy
     public static Boolean USE_PROXY;

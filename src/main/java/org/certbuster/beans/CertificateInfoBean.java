@@ -17,100 +17,117 @@ public class CertificateInfoBean
     private Integer port;
     private X509Certificate sslCertificate;
     private Crl_Status crlStatus;
+    private String errorDescription;
+    private String sigAlgName;
 
-    public enum RESULT_CODE
+	public enum RESULT_CODE
     {
-	OK, ERROR, URL_WITHOUT_CERTS
+    	OK, ERROR, URL_WITHOUT_CERTS
     }
 
     public RESULT_CODE getResult()
     {
-	return result;
+    	return result;
     }
 
     public void setResult(RESULT_CODE result)
     {
-	this.result = result;
+    	this.result = result;
     }
 
     public String getIssuer()
     {
-	return issuer;
+    	return issuer;
     }
 
     public void setIssuer(String issuer)
     {
-	this.issuer = issuer;
+    	this.issuer = issuer;
     }
 
     public String getSubject()
     {
-	return subject;
+    	return subject;
     }
 
     public void setSubject(String subject)
     {
-	this.subject = subject;
+    	this.subject = subject;
     }
 
     public Date getNotBefore()
     {
-	return notBefore;
+    	return notBefore;
     }
 
     public void setNotBefore(Date notBefore)
     {
-	this.notBefore = notBefore;
+    	this.notBefore = notBefore;
     }
 
     public Date getNotAfter()
     {
-	return notAfter;
+    	return notAfter;
     }
 
     public void setNotAfter(Date notAfter)
     {
-	this.notAfter = notAfter;
+    	this.notAfter = notAfter;
     }
 
     public String getHost()
     {
-	return host;
+    	return host;
     }
 
     public void setHost(String host)
     {
-	this.host = host;
+    	this.host = host;
     }
 
     public Integer getPort()
     {
-	return port;
+    	return port;
     }
 
     public void setPort(Integer port)
     {
-	this.port = port;
+    	this.port = port;
     }
 
     public X509Certificate getSslCertificate()
     {
-	return sslCertificate;
+    	return sslCertificate;
     }
 
     public void setSslCertificate(X509Certificate sslCertificate)
     {
-	this.sslCertificate = sslCertificate;
+    	this.sslCertificate = sslCertificate;
     }
 
     public Crl_Status getCrlStatus()
     {
-	return crlStatus;
+    	return crlStatus;
     }
 
     public void setCrlStatus(Crl_Status crlStatus)
     {
-	this.crlStatus = crlStatus;
+    	this.crlStatus = crlStatus;
     }
+    
+    public String getErrorDescription() {
+		return errorDescription;
+	}
 
+	public void setErrorDescription(String errorDescription) {
+		this.errorDescription = errorDescription;
+	}
+
+	public String getSigAlgName() {
+		return sigAlgName;
+	}
+
+	public void setSigAlgName(String sigAlgName) {
+		this.sigAlgName = sigAlgName;
+	}
 }

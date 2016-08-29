@@ -14,6 +14,7 @@ import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.x509.DistributionPoint;
 import org.bouncycastle.asn1.x509.GeneralNames;
 import org.certbuster.beans.CertificateInfoBean;
+import org.certbuster.beans.CertificateInfoBean.RESULT_CODE;
 
 public class CertificateService
 {
@@ -72,60 +73,61 @@ public class CertificateService
     private Crl_Status certificateRevoked(X509Certificate certificate)
     {
 
-	byte[] crlDpExtension = certificate.getExtensionValue("2.5.29.31");
-	if (crlDpExtension != null)
-	{
-	    List<List<String>> crlDistributionPoints = getCrlDistributionPoints(certificate.getExtensionValue("2.5.29.31"));
-	    if (crlDistributionPoints.size() == 0)
-	    {
-		LogService.writeLog("Crl distribution point exists but I could not find any url (not http and ended with .crl??)");
-		return Crl_Status.NO_CRL_DP;
-	    }
-
-	    ConnectionService connectionService = new ConnectionService();
-	    for (List<String> crlDp : crlDistributionPoints)
-	    {
-		CRL crl = null;
-		for (int i = 0; i < crlDp.size() && crl == null; i++)
+		byte[] crlDpExtension = certificate.getExtensionValue("2.5.29.31");
+		if (crlDpExtension != null)
 		{
-		    crl = connectionService.getCrl(crlDp.get(i));
+		    List<List<String>> crlDistributionPoints = getCrlDistributionPoints(certificate.getExtensionValue("2.5.29.31"));
+		    if (crlDistributionPoints.size() == 0)
+		    {
+		    	LogService.writeLog("Crl distribution point exists but I could not find any url (not http and ended with .crl??)");
+		    	return Crl_Status.NO_CRL_DP;
+		    }
+	
+		    ConnectionService connectionService = new ConnectionService();
+		    for (List<String> crlDp : crlDistributionPoints)
+		    {
+		    	CRL crl = null;
+		    	for (int i = 0; i < crlDp.size() && crl == null; i++)
+		    	{
+		    		crl = connectionService.getCrl(crlDp.get(i));
+		    	}
+	
+		    	if ((crl != null) && (crl.isRevoked(certificate) == true))
+		    	{
+		    		return Crl_Status.REVOKED;
+		    	}
+		    }
+	
+		    Date now = new Date();
+		    // expired
+		    if (certificate.getNotAfter().before(now) == true)
+		    {
+		    	return Crl_Status.EXPIRED;
+		    }
+	
+		    // not valid yet
+		    if (certificate.getNotBefore().after(now) == true)
+		    {
+		    	return Crl_Status.NOT_VALID_YET;
+		    }
+	
+		    return Crl_Status.VALID;
 		}
-
-		if ((crl != null) && (crl.isRevoked(certificate) == true))
+		else
 		{
-		    return Crl_Status.REVOKED;
+		    LogService.writeLog("There is not crl distribution points (ext: 2.5.29.31)");
+		    return Crl_Status.NO_CRL_DP;
 		}
-	    }
-
-	    Date now = new Date();
-	    // expired
-	    if (certificate.getNotAfter().before(now) == true)
-	    {
-		return Crl_Status.EXPIRED;
-	    }
-
-	    // not valid yet
-	    if (certificate.getNotBefore().after(now) == true)
-	    {
-		return Crl_Status.NOT_VALID_YET;
-	    }
-
-	    return Crl_Status.VALID;
-	}
-	else
-	{
-	    LogService.writeLog("There is not crl distribution points (ext: 2.5.29.31)");
-	    return Crl_Status.NO_CRL_DP;
-	}
     }
 
     public void checkCrlStatus(List<CertificateInfoBean> certificateList)
     {
-	for (CertificateInfoBean cert : certificateList)
-	{
-	    LogService.writeLog("Checking crl status for certificate " + cert.getHost() + ":" + cert.getPort());
-	    cert.setCrlStatus(certificateRevoked(cert.getSslCertificate()));
-	}
+		for (CertificateInfoBean cert : certificateList)
+		{
+			if (cert.getResult() == RESULT_CODE.OK) {
+				LogService.writeLog("Checking crl status for certificate " + cert.getHost() + ":" + cert.getPort());
+				cert.setCrlStatus(certificateRevoked(cert.getSslCertificate()));
+			}
+		}
     }
-
 }

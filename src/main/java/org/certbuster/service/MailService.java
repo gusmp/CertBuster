@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -19,107 +20,112 @@ import javax.mail.internet.MimeMessage;
 
 import org.certbuster.beans.CertificateInfoBean;
 import org.certbuster.beans.ConfigurationBean;
+import org.certbuster.beans.CertificateInfoBean.RESULT_CODE;
 import org.certbuster.service.ReportService.HeaderValues;
 
 public class MailService
 {
     public void sendMail(List<CertificateInfoBean> certificateInfoBeanList) throws AddressException, MessagingException
     {
-	System.out.println("Sending mail...");
-
-	Properties props = new Properties();
-
-	props.setProperty("mail.smtp.host", ConfigurationBean.MAIL_SMTP_HOST);
-
-	if (ConfigurationBean.MAIL_SMTP_START_TLS_ENABLE == true)
-	{
-	    props.setProperty("mail.smtp.starttls.enable", "true");
-	}
-	else
-	{
-	    props.setProperty("mail.smtp.starttls.enable", "false");
-	}
-
-	props.setProperty("mail.smtp.port", ConfigurationBean.MAIL_SMTP_PORT);
-	props.setProperty("mail.smtp.user", ConfigurationBean.MAIL_SMTP_USER);
-
-	if (ConfigurationBean.MAIL_SMTP_AUTH == true)
-	{
-	    props.setProperty("mail.smtp.auth", "true");
-	}
-	else
-	{
-	    props.setProperty("mail.smtp.auth", "false");
-	}
-
-	//
-	System.setProperty("http.proxyHost", ConfigurationBean.HTTP_PROXY_HOST);
-	System.setProperty("http.proxyPort", ConfigurationBean.HTTP_PROXY_PORT);
-
-	System.setProperty("https.proxyHost", ConfigurationBean.HTTP_PROXY_PORT);
-	System.setProperty("https.proxyPort", ConfigurationBean.HTTP_PROXY_PORT);
-	//
-
-	Session session = Session.getDefaultInstance(props);
-	session.setDebug(false);
-
-	MimeMessage message = new MimeMessage(session);
-
-	message.setFrom(new InternetAddress("certuster@foo.com"));
-	message.addRecipient(Message.RecipientType.TO, new InternetAddress(ConfigurationBean.WARN_MAIL_ADDRESS));
-
-	message.setSubject("SSL certificates mail status");
-	message.setText(buildMail(filterCertificates(certificateInfoBeanList)), "UTF-8", "html");
-
-	Transport t = session.getTransport("smtp");
-	t.connect(ConfigurationBean.MAIL_SMTP_USER, ConfigurationBean.MAIL_SMTP_PASSWORD);
-	t.sendMessage(message, message.getAllRecipients());
-	t.close();
+		System.out.println("Sending mail...");
+	
+		Properties props = new Properties();
+	
+		props.setProperty("mail.smtp.host", ConfigurationBean.MAIL_SMTP_HOST);
+	
+		if (ConfigurationBean.MAIL_SMTP_START_TLS_ENABLE == true)
+		{
+		    props.setProperty("mail.smtp.starttls.enable", "true");
+		}
+		else
+		{
+		    props.setProperty("mail.smtp.starttls.enable", "false");
+		}
+	
+		props.setProperty("mail.smtp.port", ConfigurationBean.MAIL_SMTP_PORT);
+		props.setProperty("mail.smtp.user", ConfigurationBean.MAIL_SMTP_USER);
+	
+		if (ConfigurationBean.MAIL_SMTP_AUTH == true)
+		{
+		    props.setProperty("mail.smtp.auth", "true");
+		}
+		else
+		{
+		    props.setProperty("mail.smtp.auth", "false");
+		}
+	
+		//
+		System.setProperty("http.proxyHost", ConfigurationBean.HTTP_PROXY_HOST);
+		System.setProperty("http.proxyPort", ConfigurationBean.HTTP_PROXY_PORT);
+	
+		System.setProperty("https.proxyHost", ConfigurationBean.HTTP_PROXY_PORT);
+		System.setProperty("https.proxyPort", ConfigurationBean.HTTP_PROXY_PORT);
+		//
+	
+		Session session = Session.getDefaultInstance(props);
+		session.setDebug(false);
+	
+		MimeMessage message = new MimeMessage(session);
+	
+		//message.setFrom(new InternetAddress("certuster@foo.com"));
+		//message.setFrom(new InternetAddress("jvalles@kcsolutions.es")); 
+		message.setFrom(new InternetAddress("gustavo.martinez@kcsolutions.es"));
+		message.addRecipient(Message.RecipientType.TO, new InternetAddress(ConfigurationBean.WARN_MAIL_ADDRESS));
+	
+		message.setSubject("SSL certificates mail status");
+		message.setText(buildMail(filterCertificates(certificateInfoBeanList)), "UTF-8", "html");
+	
+		Transport t = session.getTransport("smtp");
+		t.connect(ConfigurationBean.MAIL_SMTP_USER, ConfigurationBean.MAIL_SMTP_PASSWORD);
+		t.sendMessage(message, message.getAllRecipients());
+		t.close();
     }
 
     public Map<Integer, ArrayList<CertificateInfoBean>> filterCertificates(List<CertificateInfoBean> certificateInfoBeanList)
     {
-	Map<Integer, ArrayList<CertificateInfoBean>> certificateInfoBeanWarnMap = new HashMap<Integer, ArrayList<CertificateInfoBean>>(ConfigurationBean.EXPIRE_WARN.length + 1);
-
-	certificateInfoBeanWarnMap.put(0, new ArrayList<CertificateInfoBean>());
-	for (Integer days : ConfigurationBean.EXPIRE_WARN)
-	{
-	    certificateInfoBeanWarnMap.put(days, new ArrayList<CertificateInfoBean>());
-	}
-
-	for (CertificateInfoBean certificateInfoBean : certificateInfoBeanList)
-	{
-	    Calendar todayLower = GregorianCalendar.getInstance();
-	    Calendar todayUpper = GregorianCalendar.getInstance();
-	    if (certificateInfoBean.getNotAfter().before(todayLower.getTime()) == true)
-	    {
-		certificateInfoBeanWarnMap.get(0).add(certificateInfoBean);
-	    }
-	    else
-	    {
-		for (Integer daysToExpire : ConfigurationBean.EXPIRE_WARN)
+		Map<Integer, ArrayList<CertificateInfoBean>> certificateInfoBeanWarnMap = new HashMap<Integer, ArrayList<CertificateInfoBean>>(ConfigurationBean.EXPIRE_WARN.length + 1);
+	
+		certificateInfoBeanWarnMap.put(0, new ArrayList<CertificateInfoBean>());
+		for (Integer days : ConfigurationBean.EXPIRE_WARN)
 		{
-		    todayLower = GregorianCalendar.getInstance();
-		    todayLower.add(Calendar.DAY_OF_MONTH, daysToExpire);
-		    todayLower.set(Calendar.HOUR_OF_DAY, 0);
-		    todayLower.set(Calendar.MINUTE, 0);
-		    todayLower.set(Calendar.SECOND, 0);
-
-		    todayUpper = (Calendar) todayLower.clone();
-		    todayUpper.set(Calendar.HOUR_OF_DAY, 23);
-		    todayUpper.set(Calendar.MINUTE, 59);
-		    todayUpper.set(Calendar.SECOND, 59);
-
-		    if ((certificateInfoBean.getNotAfter().after(todayLower.getTime())) && (certificateInfoBean.getNotAfter().before(todayUpper.getTime())))
+		    certificateInfoBeanWarnMap.put(days, new ArrayList<CertificateInfoBean>());
+		}
+	
+		for (CertificateInfoBean certificateInfoBean : certificateInfoBeanList)
+		{
+			if (certificateInfoBean.getResult() != RESULT_CODE.OK) continue;
+			
+		    Calendar todayLower = GregorianCalendar.getInstance();
+		    Calendar todayUpper = GregorianCalendar.getInstance();
+		    if (certificateInfoBean.getNotAfter().before(todayLower.getTime()) == true)
 		    {
-			certificateInfoBeanWarnMap.get(daysToExpire).add(certificateInfoBean);
-			break;
+		    	certificateInfoBeanWarnMap.get(0).add(certificateInfoBean);
+		    }
+		    else
+		    {
+				for (Integer daysToExpire : ConfigurationBean.EXPIRE_WARN)
+				{
+				    todayLower = GregorianCalendar.getInstance();
+				    todayLower.add(Calendar.DAY_OF_MONTH, daysToExpire);
+				    todayLower.set(Calendar.HOUR_OF_DAY, 0);
+				    todayLower.set(Calendar.MINUTE, 0);
+				    todayLower.set(Calendar.SECOND, 0);
+		
+				    todayUpper = (Calendar) todayLower.clone();
+				    todayUpper.set(Calendar.HOUR_OF_DAY, 23);
+				    todayUpper.set(Calendar.MINUTE, 59);
+				    todayUpper.set(Calendar.SECOND, 59);
+		
+				    if ((certificateInfoBean.getNotAfter().after(todayLower.getTime())) && (certificateInfoBean.getNotAfter().before(todayUpper.getTime())))
+				    {
+				    	certificateInfoBeanWarnMap.get(daysToExpire).add(certificateInfoBean);
+				    	break;
+				    }
+				}
 		    }
 		}
-	    }
-	}
-
-	return certificateInfoBeanWarnMap;
+	
+		return certificateInfoBeanWarnMap;
     }
 
     private String buildMail(Map<Integer, ArrayList<CertificateInfoBean>> certificateInfoBeanWarnMap)
