@@ -12,10 +12,10 @@ CertBuster will scan the server you want and will do for you:
 CertBuster is an command tool. However, you can automatize it which as a job using tools like Cron in Linux systems.
 Doing this, you will have a fresh report and a warning email periodically.
 
-2. Requirements
+2.Requirements
 ===============
 
-CertBuster is a Java application. Verify you have an updated Java version. If you don't, you can download from http://www.java.com/es/download/  
+CertBuster is a Java application. Verify you have an updated Java version. If you don't, you can download from http://www.java.com/es/download/
 
 3.Compile with dependencies (recommended!)
 ==========================================
@@ -46,7 +46,7 @@ Or
 
 mvn clean package -DskipTests=true
 
-In case you want to execute the test. 
+In case you want to execute the test.
 
 If the process is successful in the folder "target" will be a jar file called certBuster-VERSION.jar
 
@@ -64,8 +64,8 @@ The configuration file let you enable/disable features of CertBuster. Please see
 
 4.2 Hosts file
 
-This is a list of hosts to analyse in CSV format. Although you can user a plain text editor, I suggest to use a 
-spreadsheet such as Calc or Excel. 
+This is a list of hosts to analyse in CSV format. Although you can user a plain text editor, I suggest to use a
+spreadsheet such as Calc or Excel.
 The first line is made by the headers. Second a next lines are the host to scan. These lines follows the structure:
 
 HOST; PORT
@@ -105,5 +105,3 @@ mail-1.4.5.jar
 Are in the same folder of CertBuster. Now execute it with:
 
 java -jar certBuster-VERSION.jar <CONFIG_FILE>
-
-
