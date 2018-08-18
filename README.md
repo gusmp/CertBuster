@@ -1,3 +1,5 @@
+# ** NOTE: This project has been superseeded by CertBuster 2**
+
 
 1.What is CertBuster?
 =====================
@@ -59,10 +61,12 @@ Before starting using CertBuster you need two files:
 * List of host to scan
 
 4.1 Configuration file
+----------------------
 
 The configuration file let you enable/disable features of CertBuster. Please see the example file of \src\test\resources\config.properties for further details.
 
 4.2 Hosts file
+--------------
 
 This is a list of hosts to analyse in CSV format. Although you can user a plain text editor, I suggest to use a
 spreadsheet such as Calc or Excel.
